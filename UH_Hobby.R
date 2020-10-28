@@ -6,12 +6,13 @@
 # save and edit commands
 # most users probably spend the most time here
 
-## Top right: Environment and history
-# environment shows you data you've loaded and objects you've created
-
-## Bottom left: console
+## Top right: console
 # run commands, but does not save commands
 # good for "scratch work", sanity checks. things you want to check on, but not save forever
+
+## Bottom left: Environment and git
+# environment shows you data you've loaded and objects you've created
+# commit, push, and pull from RStudio!
 
 ## Bottom right: files, plots, packages, viewer
 # shows files in your working directory
@@ -83,7 +84,7 @@ library(leaflet)
 ###--- 5. Basics of tidyverse -------------------------------
 
 ## What is the tidyverse?
-# a collection of packages for cleaning, wrangling and visualizing data
+# a collection of packages for cleaning, wrangling, analyzing, and visualizing data
 # R for Data Science (very great resource!)- https://r4ds.had.co.nz/
 
 ## Select - Select (and rename) columns
@@ -92,11 +93,12 @@ library(leaflet)
 # notice stars_select now appears in the environment
 stars_select <- select(stars, star, magnitude, temp, type)  # first specify the data, then all columns to keep
 stars_select <- select(stars, star:type)                    # shorter version if columns are consecutive
+stars_select <- select(stars, -X)                           # drop a column
 stars_selectb <- select(stars,                              # with select, you can also rename column headers
                         star_name = star,                   # newname = oldname, change "star" to "star_name"
                         magnitude = magnitude,              # can keep some headers the same
                         temperature = temp,                 # change temp to temperature
-                        type = type)
+                        type = type)                        # columns you don't list will be dropped (use rename() to rename without selecting/dropping)
 
 ## Filter - filter rows of data by a certain criteria 
 # reduces number of rows
@@ -127,6 +129,10 @@ stars_summarize <- summarize(stars,                  # first, designate data
                        mag_sd  = sd(magnitude),
                        mag_max = max(magnitude),
                        mag_min = min(magnitude))
+
+# summarize by group!
+stars_summarizeb <- summarize(stars_groups, 
+                              temp_avg = mean(temp))
 # help search
 ?filter  # gives information on arguments and examples of use
 ?select
@@ -140,7 +146,7 @@ stars_summarize <- summarize(stars,                  # first, designate data
 
 ## Calculate the average temperaure and magnitude of type A and G stars
 stars_pipe <- stars %>%                  # make new object called stars_pipe by taking stars, then...
-  select(stars:type) %>%                 # select only these columns, then...           
+  select(star:type) %>%                 # select only these columns, then...           
   filter(type == "A" | type == "M") %>%  # filter to types A or M, then...
   group_by(type) %>%                     # group data by star type, then...
   summarize(avg_temp = mean(temp),       # calculate average temperature and magnitude for star types A and G
@@ -175,5 +181,5 @@ ggplot(data = stars, # specify data
 
 # boxplot showing temperature of different star types
 ggplot(data = stars, mapping = aes(x = type, y = temp)) +
-  geom_boxplot(color = 'blue') 
-  #geom_point()     # multiple geoms possible on one plot
+  geom_boxplot(color = 'blue') +
+  geom_point()     # multiple geoms possible on one plot
