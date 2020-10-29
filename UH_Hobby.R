@@ -49,7 +49,7 @@ stars <- read.csv("stars.csv", header = TRUE)
 ## View data
 head(stars)   # shows first few rows of data
 View(stars)   # shows data frame in a separate window -- can sort and filter here
-
+names(stars)
 ###--- 4. Loading packages ----------------------------------
 
 ## About Packages 
