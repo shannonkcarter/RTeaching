@@ -6,11 +6,11 @@
 # save and edit commands
 # most users probably spend the most time here
 
-## Top right: console
+## Bottom left: console
 # run commands, but does not save commands
 # good for "scratch work", sanity checks. things you want to check on, but not save forever
 
-## Bottom left: Environment and git
+## Top right: Environment and git
 # environment shows you data you've loaded and objects you've created
 # commit, push, and pull from RStudio!
 
@@ -92,8 +92,10 @@ library(leaflet)
 # make a new object so you don't overwrite the original
 # notice stars_select now appears in the environment
 stars_select <- select(stars, star, magnitude, temp, type)  # first specify the data, then all columns to keep
+stars_select <- dplyr::select(stars, star, magnitude, temp, type) # package::function for better documentation + avoid duplicate function names
 stars_select <- select(stars, star:type)                    # shorter version if columns are consecutive
 stars_select <- select(stars, -X)                           # drop a column
+
 stars_selectb <- select(stars,                              # with select, you can also rename column headers
                         star_name = star,                   # newname = oldname, change "star" to "star_name"
                         magnitude = magnitude,              # can keep some headers the same
@@ -131,22 +133,23 @@ stars_summarize <- summarize(stars,                  # first, designate data
                        mag_min = min(magnitude))
 
 # summarize by group!
-stars_summarizeb <- summarize(stars_groups, 
-                              temp_avg = mean(temp))
+stars_summarizeb <- summarize(stars_group, 
+                              temp_avg = mean(temp),
+                              mag_avg  = mean(magnitude))
 # help search
 ?filter  # gives information on arguments and examples of use
 ?select
 
 ###--- 6. Piping a sequence of commands ---------------------
 
-## About Pipes (" %>% ")
+## About Pipes (" %>% ") 
 # chain together a sequence of commands
 # read as "then"
 # keyboard shortcut cmd-shift-m
 
 ## Calculate the average temperaure and magnitude of type A and G stars
 stars_pipe <- stars %>%                  # make new object called stars_pipe by taking stars, then...
-  select(star:type) %>%                 # select only these columns, then...           
+  select(star:type) %>%                  # select only these columns, then...           
   filter(type == "A" | type == "M") %>%  # filter to types A or M, then...
   group_by(type) %>%                     # group data by star type, then...
   summarize(avg_temp = mean(temp),       # calculate average temperature and magnitude for star types A and G
@@ -177,9 +180,25 @@ summary(linear_model)   # gives residuals, error, p-values
 # scatter plot showing relationship between temperature and star type 
 ggplot(data = stars, # specify data
        mapping = aes(x = temp, y = magnitude, color = type)) + # mapping (i.e., how components of the data relate to elements of the graph)
-  geom_point()  # add "geom", basically what kind of graph (geom_bar, geom_boxplot, geom_line...)
+  geom_point() +  # add "geom", basically what kind of graph (geom_bar, geom_boxplot, geom_line...)
+  theme_bw()
 
 # boxplot showing temperature of different star types
 ggplot(data = stars, mapping = aes(x = type, y = temp)) +
   geom_boxplot(color = 'blue') +
-  geom_point()     # multiple geoms possible on one plot
+  geom_point() +     # multiple geoms possible on one plot
+  theme_bw()
+
+###--- 9. Git and RProjects ---------------------------------
+
+## Git
+# can connect RStudio with git to commit/push/pull from RStudio!
+# https://happygitwithr.com/index.html
+# anything more than simple commit/push/pull still usually requires console
+
+## RProjects
+# a way of organizing projects with code, data, and code outputs (figures, maps)
+# makes folder structure management better-- wd set to project directory, outputs save there
+# seamlessly integrates with github
+# makes it easier to pick up where you left off
+# switch between projects in the top right (above environment pane)
