@@ -263,4 +263,10 @@ ggplot(df, aes(x = week_number, y = deaths_weekly, group = week_number)) +
   
 # are there more tests administered in zip code a than b?
 ?t.test
-  
+zip_60603 <- df %>% 
+    filter(zip_code == "60603") %>% 
+    select(tests_weekly)
+zip_60611 <- df %>% 
+  filter(zip_code == "60611") %>% 
+  select(tests_weekly)
+t.test(zip_60603, zip_60611)
