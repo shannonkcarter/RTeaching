@@ -147,6 +147,7 @@ stars_summarizeb <- summarize(stars_group,
 # read as "then"
 # keyboard shortcut cmd-shift-m
 
+
 ## Calculate the average temperaure and magnitude of type A and G stars
 stars_pipe <- stars %>%                  # make new object called stars_pipe by taking stars, then...
   select(star:type) %>%                  # select only these columns, then...           
@@ -219,17 +220,22 @@ str(df)   # see what data type each variable is
 
 df <- read.csv("COVID-19_Cases__Tests__and_Deaths_by_ZIP_Code.csv") %>% 
   clean_names() # simple fix to deal with column names for now
+library(janitor)
 
 # what 
-ggplot(df, aes(x = week_number, y = cases_cumulative)) + 
+ggplot(df, aes(x = week_number, y = cases_cumulative, color = zip_code)) + 
   geom_point()
 
 ## Other things we could plot...
 # 1. population against cumulative tests and/or cases. which zip codes are over/under represented for testing and cases?
 ggplot()
+ggplot(df, aes(x = population, y = cases_cumulative)) + 
+  geom_jitter(alpha = 0.5)
 
 # 2. testing over time
-ggplot() 
+ggplot()
+ggplot(df, aes(x = week_number, y = tests_cumulative)) + 
+  geom_point()
 
 # 3. cumulative testing by cumulative cases
 # for this we only want the latest data for each zipcode - filter then plot data with a pipe!
@@ -243,7 +249,7 @@ tests_cases
 # boxplot vs scatterplot here
 # week_number vs week_start
 ggplot(df, aes(x = week_number, y = deaths_weekly, group = week_number)) + 
-  #geom_boxplot()
+  geom_boxplot()
   geom_point()
 
 # 5. many more!
@@ -254,3 +260,7 @@ ggplot(df, aes(x = week_number, y = deaths_weekly, group = week_number)) +
 # filter to include only certain zip codes of interest, or group zip codes by some criteria (e.g., SVI quartile, geographically, etc.)
 # join with other data sources- SES data for chicago zip codes, comparable nationwide dataset, etc.
 # depends on your research goals and questions!
+  
+# are there more tests administered in zip code a than b?
+?t.test
+  
