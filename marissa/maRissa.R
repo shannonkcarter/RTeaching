@@ -3,7 +3,7 @@ library(tidyverse)
 library(pdftools)
 library(here)
 
-df21 <- pdf_text(here::here("marissa", "FY21 HB 3 CCR District Runs.pdf")) %>% 
+df21 <- pdf_text("FY21 HB 3 CCR District Runs.pdf") %>% 
   readr::read_lines() %>%
   as.data.frame() 
 
