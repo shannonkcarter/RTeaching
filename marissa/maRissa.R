@@ -1,7 +1,9 @@
-install.packages(c("tidyverse", "pdftools", "here"))
+
 library(tidyverse)
 library(pdftools)
 library(here)
+library(tidycensus)
+library(sf)
 
 df21 <- pdf_text("FY21 HB 3 CCR District Runs.pdf") %>% 
   readr::read_lines() %>%
@@ -68,3 +70,32 @@ df21 <- pdf_text("FY21 HB 3 CCR District Runs.pdf") %>%
 #          county = str_replace_all(county, "Van Zandt", "Van-Zandt")) %>% 
 #   # space delimit into columns 
 #   separate(county, into = names, sep = " ") 
+tidycensus::census_api_key("")
+
+v19 <- tidycensus::load_variables(2019, "acs5/subject", cache = TRUE)
+b19 <- tidycensus::load_variables(2019, "acs5", cache = T)  
+acs_vars <- tidycensus::get_acs(
+  geography = "county",
+  state = "48",
+  #county = "201",
+  year = 2019,
+  survey = "acs5",
+  table = "B28003",         
+  geometry = T,
+  keep_geo_vars = F)
+
+library(sf) # package for mapping
+
+acs_vars_clean <- acs_vars %>%  # make a new dataframe so you don't have to repull the raw data from tidycensus every time
+  select(-moe) %>%              # drop margin of error column- probably won't need
+  mutate(variable_name = case_when(variable == "B28003_001" ~ "total_households", # mutate() makes a new column called "variable_name". here we use case_when() to make "variable_name" based on the value of "variable"
+                                   variable == "B28003_002" ~ ...,                # finish recoding each variable with a new name
+                                   ...)) 
+
+# make a new version, this one in "wide" format, i.e., with each variable as a column
+acs_vars_clean_wide <- acs_vars_clean %>% 
+  st_drop_geometry() %>%        # drop the geometry variable to do this manipulation- will have to add it back later to map
+  select(-variable) %>%         # don't need the variable code name anymore 
+  pivot_wider(id_cols = c("GEOID", "NAME"),  # pivot wider makes your data wider by turning rows into columns
+              names_from = variable_name,    # new column names come from "variable_name"
+              values_from = estimate)        # new column values come from "estimate"
