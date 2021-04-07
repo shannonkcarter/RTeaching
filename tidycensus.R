@@ -54,7 +54,7 @@ Any line without a "#" in front will try to run as code
 # Method 2: using install.packages()
 # run a line of code with ctrl-enter or cmd-enter
 install.packages("tidyverse")               # install a single package
-install.packages(c("leaflet", "tidyverse")) # install multiple at once by concatenating ("c()") names into a list
+install.packages(c("tidycensus", "tidyverse")) # install multiple at once by concatenating ("c()") names into a list
 
 ## Loading Packages
 # "Check out" installed packages for use
@@ -66,6 +66,7 @@ install.packages(c("leaflet", "tidyverse")) # install multiple at once by concat
 # Method 2: using library()
 # preferred method for reproducibility
 library(tidyverse)
+library(tidycensus)
 
 ###--- 4. Loading data --------------------------------------
 
@@ -81,7 +82,7 @@ View(stars)   # shows data frame in a separate window -- can sort and filter her
 names(stars)  # shows column names
 str(stars)    # shows variable types and basic info for all vars
 
-## Read in census data with tidycensus
+## Pull data from the Census API with tidycensus
 # you'll need to obtain a census API key which you should only need to enter once
 # you should be prompted when you attempt to download data. enter the key into the quotes here
 tidycensus::census_api_key("")
