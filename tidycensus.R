@@ -84,7 +84,7 @@ str(stars)    # shows variable types and basic info for all vars
 
 ## Pull data from the Census API with tidycensus
 # you'll need to obtain a census API key which you should only need to enter once
-# you should be prompted when you attempt to download data. enter the key into the quotes here
+# https://api.census.gov/data/key_signup.html enter the key into the quotes here
 tidycensus::census_api_key("")
 
 # use load_variables() to look at variables in census tables
@@ -101,9 +101,13 @@ acs <- tidycensus::get_acs(
   year = 2019,
   survey = "acs5",       # designate American Community Survey 5-year estimate. acs1 and others also options
   table = "B28003",      # found this table number by scanning b19 above    
-  geometry = F,          # include the shape file to enable mapping?
-  keep_geo_vars = F)     # keep many extra variables related to location (sometimes useful)
+  geometry = T,          # include the shape file to enable mapping?
+  keep_geo_vars = F) %>%     # keep many extra variables related to location (sometimes useful)
+  filter(variable == "B28003_001")
 View(acs)
+
+
+# https://data.census.gov/cedsci/table?q=ACSDT1Y2019.B28003&tid=ACSDT1Y2019.B28003&hidePreview=true
 
 ###--- 5. Basics of tidyverse -------------------------------
 
@@ -132,7 +136,7 @@ acs_harris <- filter(acs, NAME == "Harris County, Texas")
 acs_filterb <- filter(acs, estimate > 2000)
 
 # filter by multiple criteria at once
-acs_harrisb <- filter(acs, NAME == "Harris County, Texas" & estimate > 10000)  # returns type A stars that are over 9000deg
+acs_harrisb <- filter(acs, NAME == "Harris County, Texas" & estimate > 10000)  
 
 # help search
 ?filter  # gives information on arguments and examples of use
