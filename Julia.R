@@ -35,7 +35,7 @@ Any line without a "#" in front will try to run as code
 # https://support.rstudio.com/hc/en-us/articles/200484568-Code-Folding-and-Sections
 # Organize your code with sections
 # Can collapse sections by pressing the arrow next to the line number
-# Can navigate between sections by pressing the button in the top right of this window pane
+# Can navigate between sections by pressing the button with stacked lines in the top right of this window pane
 
 ###--- 3. Loading data --------------------------------------
 
@@ -136,6 +136,12 @@ stars_summarize <- summarize(stars,                  # first, designate data
 stars_summarizeb <- summarize(stars_group, 
                               temp_avg = mean(temp),
                               mag_avg  = mean(magnitude))
+
+# or more likely will do it in a pipe (more on pipes following)...
+stars_summarizec <- stars %>% 
+  group_by(type) %>% 
+  summarize(temp_avg = mean(temp),
+            mag_avg  = mean(magnitude))
 # help search
 ?filter  # gives information on arguments and examples of use
 ?select
@@ -148,7 +154,7 @@ stars_summarizeb <- summarize(stars_group,
 # keyboard shortcut cmd-shift-m
 
 
-## Calculate the average temperaure and magnitude of type A and G stars
+## Calculate the average temperature and magnitude of type A and G stars
 stars_pipe <- stars %>%                  # make new object called stars_pipe by taking stars, then...
   select(star:type) %>%                  # select only these columns, then...           
   filter(type == "A" | type == "M") %>%  # filter to types A or M, then...
@@ -158,6 +164,7 @@ stars_pipe <- stars %>%                  # make new object called stars_pipe by 
 View(stars_pipe)
 
 # Non-pipe method-- longer, more opportunity for error, harder to read
+# cut out the intermediate products with a pipe!
 stars_select <- select(stars, star:type)
 stars_filter <- filter(stars_select, type == "A" | type == "M")
 stars_group  <- group_by(stars_filter, type)
@@ -190,7 +197,16 @@ ggplot(data = stars, mapping = aes(x = type, y = temp)) +
   geom_point() +     # multiple geoms possible on one plot
   theme_bw()
 
-###--- 9. Git and RProjects ---------------------------------
+###--- 9. Plotting with highcharter -------------------------
+install.packages("highcharter")
+library(highcharter)
+
+# highcharts is a javascript plotting software ; highcharter is the R wrapper, with syntax similar to ggplot
+# highcharts are great for dashboards bc they're interactive and the defaults are sharp looking. 
+# ALSO, highcharter accommodates different screen sizes and really elegantly. enlarge the window viewer size of a ggplot vs highchart to compare
+hchart(stars, "scatter", hcaes(x = temp, y = magnitude, group = type))
+
+###--- 10. Git and RProjects ---------------------------------
 
 ## Git
 # can connect RStudio with git to commit/push/pull from RStudio!
@@ -204,7 +220,7 @@ ggplot(data = stars, mapping = aes(x = type, y = temp)) +
 # makes it easier to pick up where you left off
 # switch between projects in the top right (above environment pane)
 
-###--- 10. Now with more interesting data... ------------------
+###--- 11. Now with more interesting data... ------------------
 
 # data for Chicago's COVID-19 cases, tests, and deaths
 # source: https://healthdata.gov/dataset/covid-19-cases-tests-and-deaths-zip-code
@@ -217,23 +233,20 @@ str(df)   # see what data type each variable is
 # column names are awkward
 # date data is type factor, not date
 # location data isn't there-- if we wanted to map this, we would need shape file of Chicago zip codes
-
+library(janitor)
 df <- read.csv("COVID-19_Cases__Tests__and_Deaths_by_ZIP_Code.csv") %>% 
   clean_names() # simple fix to deal with column names for now
-library(janitor)
 
-# what 
+## Some half-baked data exploration plots you could improve
 ggplot(df, aes(x = week_number, y = cases_cumulative, color = zip_code)) + 
   geom_point()
 
 ## Other things we could plot...
 # 1. population against cumulative tests and/or cases. which zip codes are over/under represented for testing and cases?
-ggplot()
 ggplot(df, aes(x = population, y = cases_cumulative)) + 
   geom_jitter(alpha = 0.5)
 
 # 2. testing over time
-ggplot()
 ggplot(df, aes(x = week_number, y = tests_cumulative)) + 
   geom_point()
 
